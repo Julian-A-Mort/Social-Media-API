@@ -64,6 +64,44 @@ const userController = {
       res.status(500).json({ message: 'Error deleting user', error: err.message });
     }
   },
+
+  // Add a Friend
+  addFriend: async (req, res) => {
+    try {
+      const { userId, friendId } = req.params;
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { friends: friendId } }, 
+        { new: true }
+      );
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json(user);
+    } catch (err) {
+      res.status(500).json({ message: 'Error adding friend', error: err.message });
+    }
+  },
+  
+  // Remove a Friend
+  removeFriend: async (req, res) => {
+    try {
+      const { userId, friendId } = req.params;
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $pull: { friends: friendId } },
+        { new: true }
+      );
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json(user);
+    } catch (err) {
+      res.status(500).json({ message: 'Error removing friend', error: err.message });
+    }
+  },
+  
+
 };
 
 module.exports = userController;

@@ -68,6 +68,43 @@ const thoughtController = {
       res.status(500).json({ message: 'Error deleting thought', error: err.message });
     }
   },
+
+  // Create REACTION
+  createReaction: async (req, res) => {
+    try {
+      const { thoughtId } = req.params;
+      const thought = await Thought.findByIdAndUpdate(
+        thoughtId,
+        { $push: { reactions: req.body } }, 
+        { new: true }
+      );
+      if (!thought) {
+        return res.status(404).json({ message: 'Thought not found' });
+      }
+      res.json(thought);
+    } catch (err) {
+      res.status(500).json({ message: 'Error creating reaction', error: err.message });
+    }
+  },  
+  
+  // Delete REACTION
+  deleteReaction: async (req, res) => {
+    try {
+      const { thoughtId, reactionId } = req.params;
+      const thought = await Thought.findByIdAndUpdate(
+        thoughtId,
+        { $pull: { reactions: { _id: reactionId } } },
+        { new: true }
+      );
+      if (!thought) {
+        return res.status(404).json({ message: 'Thought not found' });
+      }
+      res.json(thought);
+    } catch (err) {
+      res.status(500).json({ message: 'Error deleting reaction', error: err.message });
+    }
+  },  
+
 };
 
 module.exports = thoughtController;
