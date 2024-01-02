@@ -49,25 +49,27 @@ const thoughtController = {
     }
   },
 
-  // DELETE to remove a thought by id
-  deleteThought: async (req, res) => {
+ // DELETE to remove a thought by id
+deleteThought: async (req, res) => {
     try {
+      // First, find the thought to get the userId
       const thought = await Thought.findById(req.params.id);
       if (!thought) {
         return res.status(404).json({ message: 'No thought found with this id!' });
       }
-
+  
       // Remove thought from user's thoughts array
       await User.findByIdAndUpdate(thought.userId, { $pull: { thoughts: thought._id } });
-
-      // Delete the thought
-      await thought.remove();
-
+  
+      // delete the thought
+      await Thought.findByIdAndDelete(req.params.id);
+  
       res.json({ message: 'Thought has been deleted.' });
     } catch (err) {
       res.status(500).json({ message: 'Error deleting thought', error: err.message });
     }
   },
+  
 
   // Create REACTION
   createReaction: async (req, res) => {
